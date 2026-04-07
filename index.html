@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>程度を表すスライダー</title>
+  <style>
+    body {
+      font-family: "Hiragino Sans", "Yu Gothic", sans-serif;
+      background: #f3f1eb;
+      margin: 0;
+      padding: 40px 20px;
+      color: #333;
+    }
+
+    .wrapper {
+      max-width: 700px;
+      margin: 0 auto;
+      background: #fcfbf8;
+      border: 1px solid #e3ddd2;
+      border-radius: 16px;
+      padding: 28px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    }
+
+    .question {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 28px;
+    }
+
+    .slider-area {
+      position: relative;
+      padding: 56px 12px 28px;
+    }
+
+    .scale-labels {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 18px;
+      font-size: 18px;
+      font-weight: 600;
+      color: #5a5246;
+      gap: 12px;
+    }
+
+    .scale-labels .center {
+      text-align: center;
+      color: #7a7164;
+      font-size: 16px;
+      font-weight: 500;
+      flex: 0 0 auto;
+    }
+
+    .scale-labels .left,
+    .scale-labels .right {
+      flex: 1;
+    }
+
+    .scale-labels .left {
+      text-align: left;
+    }
+
+    .scale-labels .right {
+      text-align: right;
+    }
+
+    .track {
+      position: relative;
+      height: 14px;
+      border-radius: 999px;
+      background:
+        linear-gradient(to right, #dce9f7 0%, #efe6d2 50%, #f6d6c9 100%);
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.12);
+    }
+
+    .range {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      background: transparent;
+      position: absolute;
+      top: 49px;
+      left: 0;
+      margin: 0;
+      height: 20px;
+      z-index: 3;
+    }
+
+    .range::-webkit-slider-runnable-track {
+      height: 14px;
+      background: transparent;
+    }
+
+    .range::-moz-range-track {
+      height: 14px;
+      background: transparent;
+    }
+
+    .range::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 1px;
+      height: 1px;
+      background: transparent;
+      border: none;
+      box-shadow: none;
+    }
+
+    .range::-moz-range-thumb {
+      width: 1px;
+      height: 1px;
+      background: transparent;
+      border: none;
+    }
+
+    .paper-point {
+      position: absolute;
+      top: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      min-width: 76px;
+      height: 48px;
+      padding: 0 14px;
+      border-radius: 12px;
+      border: 1px solid #d9cfbb;
+      background:
+        repeating-linear-gradient(
+          0deg,
+          #fffdf8 0px,
+          #fffdf8 6px,
+          #f7f2e8 7px,
+          #fffdf8 8px
+        );
+      box-shadow:
+        0 4px 10px rgba(0, 0, 0, 0.12),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: #4d4437;
+      z-index: 2;
+      pointer-events: none;
+      transition: left 0.12s linear;
+    }
+
+    .paper-point::after {
+      content: "";
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 14px;
+      height: 14px;
+      background: #fffdf8;
+      border-right: 1px solid #d9cfbb;
+      border-bottom: 1px solid #d9cfbb;
+      rotate: 45deg;
+      box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .value-text {
+      margin-top: 28px;
+      font-size: 16px;
+      color: #6a6257;
+    }
+
+    .edit-area {
+      margin-top: 36px;
+      padding-top: 24px;
+      border-top: 1px solid #e7e0d5;
+    }
+
+    .edit-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 14px;
+      margin-bottom: 6px;
+      color: #6c6459;
+      font-weight: 600;
+    }
+
+    .form-group input {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid #d8d1c6;
+      background: #fff;
+      font-size: 15px;
+    }
+
+    @media (min-width: 720px) {
+      .form-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="question" id="questionText">今の気温は？</div>
+
+    <div class="slider-area">
+      <div class="paper-point" id="paperPoint">50</div>
+      <div class="track"></div>
+      <input
+        type="range"
+        id="degreeSlider"
+        class="range"
+        min="0"
+        max="100"
+        value="50"
+      />
+
+      <div class="scale-labels">
+        <div class="left" id="leftLabel">← 寒い</div>
+        <div class="center" id="centerLabel">真ん中</div>
+        <div class="right" id="rightLabel">暑い →</div>
+      </div>
+    </div>
+
+    <div class="value-text" id="valueText">
+      現在の程度: 50 / 100
+    </div>
+
+    <div class="edit-area">
+      <div class="edit-title">表示内容の編集</div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="questionInput">質問文</label>
+          <input type="text" id="questionInput" value="今の気温は？" />
+        </div>
+
+        <div class="form-group">
+          <label for="leftInput">左の項目</label>
+          <input type="text" id="leftInput" value="← 寒い" />
+        </div>
+
+        <div class="form-group">
+          <label for="centerInput">中央の項目</label>
+          <input type="text" id="centerInput" value="真ん中" />
+        </div>
+
+        <div class="form-group">
+          <label for="rightInput">右の項目</label>
+          <input type="text" id="rightInput" value="暑い →" />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const slider = document.getElementById("degreeSlider");
+    const paperPoint = document.getElementById("paperPoint");
+    const valueText = document.getElementById("valueText");
+
+    const questionText = document.getElementById("questionText");
+    const leftLabel = document.getElementById("leftLabel");
+    const centerLabel = document.getElementById("centerLabel");
+    const rightLabel = document.getElementById("rightLabel");
+
+    const questionInput = document.getElementById("questionInput");
+    const leftInput = document.getElementById("leftInput");
+    const centerInput = document.getElementById("centerInput");
+    const rightInput = document.getElementById("rightInput");
+
+    function updateSliderUI() {
+      const min = Number(slider.min);
+      const max = Number(slider.max);
+      const value = Number(slider.value);
+      const percent = ((value - min) / (max - min)) * 100;
+
+      paperPoint.style.left = `${percent}%`;
+      paperPoint.textContent = value;
+      valueText.textContent = `現在の程度: ${value} / ${max}`;
+    }
+
+    function updateLabels() {
+      questionText.textContent = questionInput.value;
+      leftLabel.textContent = leftInput.value;
+      centerLabel.textContent = centerInput.value;
+      rightLabel.textContent = rightInput.value;
+    }
+
+    slider.addEventListener("input", updateSliderUI);
+
+    questionInput.addEventListener("input", updateLabels);
+    leftInput.addEventListener("input", updateLabels);
+    centerInput.addEventListener("input", updateLabels);
+    rightInput.addEventListener("input", updateLabels);
+
+    updateSliderUI();
+    updateLabels();
+  </script>
+</body>
+</html>
